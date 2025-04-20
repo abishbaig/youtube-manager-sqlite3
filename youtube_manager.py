@@ -7,10 +7,13 @@ import sqlite3
 conn = sqlite3.connect("youtube.db")
 cur = conn.cursor()
 
+cur.execute("DROP TABLE videos")
+
 # Creating Table to Store Values
 cur.execute('''
+            
     CREATE TABLE IF NOT EXISTS videos(
-        video_id INT PRIMARY KEY AUTO INCREMENT,
+        video_id INTEGER PRIMARY KEY,
         video_title TEXT NOT NULL,
         video_duration INT NOT NULL        
     );
@@ -23,7 +26,7 @@ sub_sign_count = 50    # Length for separator lines to improve console UI readab
 
 # --------------------- Video Listing ---------------------
 
-# Displays all videos stored in the list in a clean tabular format
+# Displays all videos stored in the db in a clean tabular format
 def list_all_Videos():
     print("\tVIDEOS LIST MENU")
     print("-" * sub_sign_count)
@@ -49,7 +52,7 @@ def video_already_present(video_name):
 
 # --------------------- Core Functionalities ---------------------
 
-# Handles user input for adding a new video and appends it to the list if not already present
+# Handles user input for adding a new video and add to database if not already present
 def add_video():
     print("-" * sub_sign_count)
     print("\tADD VIDEO MENU")
@@ -65,13 +68,13 @@ def add_video():
     print("-" * sub_sign_count)
 
     # Add new video as a dictionary
-    cur.execute("INSERT INTO videos(video_name,video_duration) VALUES (?,?)",(video_name,video_duration))
-
+    cur.execute("INSERT INTO videos(video_title,video_duration) VALUES (?,?)",(video_name,video_duration))
+    conn.commit()
     
     print("Video Added Successfully...")
     print("-" * sub_sign_count)
 
-# Updates the name and duration of an existing video using its index from the list
+# Updates the name and duration of an existing video using its ID
 def update_video():
     list_all_Videos()
     print("-" * sub_sign_count)
@@ -96,9 +99,10 @@ def update_video():
             print("Video with this Name Already Present!!!\nFailed to Add!!!")
             return
         # Update the corresponding video entry
-        cur.execute("UPDATE videos SET video_name=?, video_duration=? WHERE video_id=?",(video_name,video_duration,video_index))
+        cur.execute("UPDATE videos SET video_title=?, video_duration=? WHERE video_id=?",(video_name,video_duration,video_index))
+        conn.commit()
+
         print("-" * sub_sign_count)
-        
         print("Video Updated Successfully...")
         print("-" * sub_sign_count)
     else:
@@ -107,7 +111,7 @@ def update_video():
         print("-" * sub_sign_count)
        
 
-# Removes a video from the list based on its index
+# Removes a video from the db
 def delete_video():
     list_all_Videos()
     print("-" * sub_sign_count)
@@ -127,6 +131,8 @@ def delete_video():
     if isFound:
         print("-" * sub_sign_count)
         cur.execute("DELETE FROM videos WHERE video_id=?",(video_index,))
+        conn.commit()
+
         print("-" * sub_sign_count)
         print("Video Deleted Successfully...")
         print("-" * sub_sign_count)
