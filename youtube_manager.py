@@ -7,8 +7,6 @@ import sqlite3
 conn = sqlite3.connect("youtube.db")
 cur = conn.cursor()
 
-cur.execute("DROP TABLE videos")
-
 # Creating Table to Store Values
 cur.execute('''
             
@@ -28,6 +26,7 @@ sub_sign_count = 50    # Length for separator lines to improve console UI readab
 
 # Displays all videos stored in the db in a clean tabular format
 def list_all_Videos():
+    print("-" * sub_sign_count)
     print("\tVIDEOS LIST MENU")
     print("-" * sub_sign_count)
     print("ID\tName\t\tDuration(min)")
@@ -62,7 +61,9 @@ def add_video():
     video_duration = input("Enter Video Duration: ")
 
     if video_already_present(video_name):
+        print("-" * sub_sign_count)
         print("Video with this Name Already Present!!!\nFailed to Add!!!")
+        print("-" * sub_sign_count)
         return
 
     print("-" * sub_sign_count)
@@ -96,7 +97,9 @@ def update_video():
         video_name = input("Enter Video's New Title: ")
         video_duration = input("Enter Video's New Duration: ")
         if video_already_present(video_name):
+            print("-" * sub_sign_count)
             print("Video with this Name Already Present!!!\nFailed to Add!!!")
+            print("-" * sub_sign_count)
             return
         # Update the corresponding video entry
         cur.execute("UPDATE videos SET video_title=?, video_duration=? WHERE video_id=?",(video_name,video_duration,video_index))
@@ -196,5 +199,3 @@ def main():
 # Ensures this script only runs when directly executed (not when imported as a module)
 if __name__ == "__main__":
     main()
-
-
